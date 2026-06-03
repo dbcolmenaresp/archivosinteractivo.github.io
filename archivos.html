@@ -1,0 +1,807 @@
+html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manejo de Archivos - Tutorial Interactivo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #eee;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0,0,0,0.5);
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 3px solid #00d4ff;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header p {
+            color: #ccc;
+            margin-top: 10px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navegación */
+        .nav-temas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 50px;
+        }
+
+        .btn-tema {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-tema:hover {
+            background: #00d4ff;
+            color: #1a1a2e;
+            transform: translateY(-2px);
+        }
+
+        .btn-tema.activo {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+            box-shadow: 0 0 15px rgba(0,212,255,0.5);
+        }
+
+        /* Grid */
+        .contenido-principal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .contenido-principal {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Paneles */
+        .panel-teoria {
+            background: rgba(15, 25, 45, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+
+        .panel-teoria h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            border-left: 4px solid #00d4ff;
+            padding-left: 15px;
+        }
+
+        .concepto {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 3px solid #7b2cbf;
+        }
+
+        .concepto strong {
+            color: #ffd700;
+        }
+
+        .codigo {
+            background: #0a0a1a;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 15px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #00d4ff;
+            white-space: pre-wrap;
+        }
+
+        /* Panel interactivo */
+        .panel-interactivo {
+            background: rgba(15, 25, 45, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+
+        .panel-interactivo h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .ejercicio {
+            background: #0a0a1a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .ejercicio h4 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .input-group {
+            margin: 10px 0;
+        }
+
+        .input-group label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input, select {
+            background: #1a1a3e;
+            border: 1px solid #2a2a4a;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+            width: 200px;
+        }
+
+        button {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            margin: 10px 5px 0 0;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            opacity: 0.9;
+        }
+
+        .resultado {
+            background: #0a0a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 13px;
+            border: 1px solid #2a2a4a;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .success {
+            color: #51cf66;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .lang-tag {
+            display: inline-block;
+            background: #00d4ff20;
+            color: #00d4ff;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a3e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>📁 Manejo de Archivos</h1>
+    <p>Teoría + Ejercicios + Ejemplos en Python, JavaScript, Java, C y Bash</p>
+</div>
+
+<div class="container">
+    <div class="nav-temas" id="navTemas">
+        <button class="btn-tema activo" data-tema="0">📖 Teoría</button>
+        <button class="btn-tema" data-tema="1">🐍 Python</button>
+        <button class="btn-tema" data-tema="2">📜 JavaScript (Node.js)</button>
+        <button class="btn-tema" data-tema="3">☕ Java</button>
+        <button class="btn-tema" data-tema="4">⚡ C</button>
+        <button class="btn-tema" data-tema="5">🐧 Bash</button>
+        <button class="btn-tema" data-tema="6">🎯 Ejercicios</button>
+    </div>
+
+    <div class="contenido-principal">
+        <div class="panel-teoria" id="panelTeoria">
+            <!-- Teoría dinámica -->
+        </div>
+        <div class="panel-interactivo" id="panelInteractivo">
+            <!-- Contenido interactivo dinámico -->
+        </div>
+    </div>
+
+    <div class="footer">
+        💡 Explora los diferentes lenguajes y aprende a leer, escribir y manipular archivos
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // CONTENIDO TEÓRICO
+    // ============================================================
+    
+    const teoriaContent = `
+        <h2>📖 Fundamentos del Manejo de Archivos</h2>
+        
+        <div class="concepto">
+            <strong>📌 ¿Qué es un archivo?</strong><br>
+            Un archivo es una secuencia de bytes almacenada en un dispositivo de almacenamiento persistente (disco duro, SSD, USB). Los archivos tienen un nombre, una extensión (opcional), y metadatos (tamaño, fechas, permisos).
+        </div>
+        
+        <div class="concepto">
+            <strong>🔧 Operaciones básicas con archivos</strong><br>
+            • <strong>Abrir (open):</strong> Establecer un canal de comunicación con el archivo<br>
+            • <strong>Leer (read):</strong> Extraer datos del archivo hacia la memoria RAM<br>
+            • <strong>Escribir (write):</strong> Enviar datos desde la RAM al archivo<br>
+            • <strong>Cerrar (close):</strong> Liberar el canal y asegurar que los datos se guarden<br>
+            • <strong>Eliminar (delete/remove):</strong> Borrar el archivo del sistema de archivos<br>
+            • <strong>Renombrar (rename):</strong> Cambiar el nombre o mover el archivo
+        </div>
+        
+        <div class="concepto">
+            <strong>📂 Modos de apertura comunes</strong>
+            <table style="width:100%; margin-top:10px; background:#1a1a3e; border-color:#2a2a4a;">
+                <thead><tr><th>Modo</th><th>Descripción</th></tr></thead>
+                <tbody>
+                    <tr><td>"r"</td><td>Lectura (el archivo debe existir)</td></tr>
+                    <tr><td>"w"</td><td>Escritura (sobrescribe o crea nuevo)</td></tr>
+                    <tr><td>"a"</td><td>Append (agrega al final)</td></tr>
+                    <tr><td>"r+"</td><td>Lectura y escritura (sin truncar)</td></tr>
+                    <tr><td>"w+"</td><td>Lectura y escritura (trunca)</td></tr>
+                    <tr><td>"a+"</td><td>Lectura y append</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="concepto">
+            <strong>🔄 Buffers y flushing</strong><br>
+            Las operaciones de escritura generalmente no van directamente al disco; se almacenan en un <strong>buffer</strong> en memoria RAM. Para forzar la escritura física se usa <strong>flush()</strong> o <strong>fsync()</strong>. Al cerrar el archivo, se hace flush automáticamente.
+        </div>
+        
+        <div class="concepto">
+            <strong>⚠️ Manejo de errores</strong><br>
+            Siempre se debe verificar si las operaciones fueron exitosas: archivo no encontrado, permisos denegados, disco lleno, etc. Se recomienda usar <strong>try-catch</strong> o verificar códigos de retorno.
+        </div>
+        
+        <div class="codigo">
+            <strong>📁 Estructura típica de lectura en pseudo-código:</strong><br><br>
+            archivo = abrir("datos.txt", "r")<br>
+            si archivo es válido:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;mientras no fin_de_archivo:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;linea = leer_linea(archivo)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;procesar(linea)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;cerrar(archivo)<br>
+            sino:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;mostrar_error("No se pudo abrir el archivo")
+        </div>
+    `;
+    
+    // ============================================================
+    // EJEMPLOS POR LENGUAJE
+    // ============================================================
+    
+    const ejemplos = {
+        python: {
+            titulo: "🐍 Python - Manejo de Archivos",
+            descripcion: "Python ofrece una sintaxis simple y potente con `open()`, `with` (context managers), y métodos como `read()`, `write()`, `readlines()`.",
+            codigo: `# === LECTURA DE ARCHIVO ===
+# Método 1: with (recomendado, cierra automáticamente)
+with open("archivo.txt", "r") as f:
+    contenido = f.read()
+    print(contenido)
+
+# Leer línea por línea
+with open("archivo.txt", "r") as f:
+    for linea in f:
+        print(linea.strip())
+
+# === ESCRITURA ===
+with open("salida.txt", "w") as f:
+    f.write("Hola mundo\\n")
+    f.write("Línea 2\\n")
+
+# === APPEND ===
+with open("log.txt", "a") as f:
+    f.write("Nueva entrada de log\\n")
+
+# === VERIFICAR SI EXISTE ===
+import os
+if os.path.exists("archivo.txt"):
+    print("El archivo existe")
+
+# === ELIMINAR ===
+os.remove("archivo.txt")
+
+# === MANEJO DE ERRORES ===
+try:
+    with open("no_existe.txt", "r") as f:
+        datos = f.read()
+except FileNotFoundError:
+    print("Archivo no encontrado")`,
+            ejercicio: "Crea una función que lea un archivo CSV y devuelva una lista de diccionarios."
+        },
+        javascript: {
+            titulo: "📜 JavaScript (Node.js) - Manejo de Archivos",
+            descripcion: "En Node.js, el módulo `fs` (File System) proporciona operaciones síncronas y asíncronas. Se recomienda usar versiones asíncronas con callbacks, Promesas o async/await.",
+            codigo: `// === IMPORTAR MÓDULO FS ===
+const fs = require('fs');
+const fsPromises = require('fs').promises;
+
+// === LECTURA ASÍNCRONA CON CALLBACK ===
+fs.readFile('archivo.txt', 'utf8', (err, data) => {
+    if (err) {
+        console.error('Error:', err);
+        return;
+    }
+    console.log(data);
+});
+
+// === LECTURA CON PROMESAS (recomendado) ===
+async function leerArchivo() {
+    try {
+        const data = await fsPromises.readFile('archivo.txt', 'utf8');
+        console.log(data);
+    } catch (err) {
+        console.error('Error:', err);
+    }
+}
+
+// === ESCRITURA ===
+await fsPromises.writeFile('salida.txt', 'Contenido a escribir\\n');
+
+// === APPEND ===
+await fsPromises.appendFile('log.txt', 'Nueva línea\\n');
+
+// === VERIFICAR EXISTENCIA ===
+const existe = await fsPromises.access('archivo.txt')
+    .then(() => true)
+    .catch(() => false);
+
+// === ELIMINAR ===
+await fsPromises.unlink('archivo.txt');
+
+// === LEER DIRECTORIO ===
+const archivos = await fsPromises.readdir('./');`,
+            ejercicio: "Escribe un script que lea un archivo JSON, modifique un campo y lo guarde de vuelta."
+        },
+        java: {
+            titulo: "☕ Java - Manejo de Archivos",
+            descripcion: "Java usa `FileInputStream`, `FileOutputStream`, `BufferedReader`, `BufferedWriter`, y las clases `Files` y `Paths` (NIO.2) para operaciones modernas.",
+            codigo: `// === LECTURA CON BUFFEREDREADER (Java 7+) ===
+import java.io.*;
+import java.nio.file.*;
+
+public class ManejoArchivos {
+    public static void main(String[] args) {
+        // Lectura con try-with-resources
+        try (BufferedReader br = new BufferedReader(
+                new FileReader("archivo.txt"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                System.out.println(linea);
+            }
+        } catch (IOException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+        
+        // Escritura
+        try (BufferedWriter bw = new BufferedWriter(
+                new FileWriter("salida.txt"))) {
+            bw.write("Hola mundo");
+            bw.newLine();
+            bw.write("Línea 2");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        // NIO.2 (Java 7+)
+        Path path = Paths.get("archivo.txt");
+        try {
+            List<String> lineas = Files.readAllLines(path);
+            Files.write(Paths.get("copia.txt"), lineas);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        // Verificar existencia
+        if (Files.exists(path)) {
+            System.out.println("El archivo existe");
+        }
+        
+        // Eliminar
+        Files.deleteIfExists(path);
+    }
+}`,
+            ejercicio: "Implementa un programa que cuente el número de líneas, palabras y caracteres de un archivo de texto."
+        },
+        c: {
+            titulo: "⚡ C - Manejo de Archivos",
+            descripcion: "En C se usa la biblioteca estándar `stdio.h` con `fopen()`, `fread()`, `fwrite()`, `fprintf()`, `fscanf()`, `fclose()`. Requiere manejo manual de buffers y verificación de errores.",
+            codigo: `#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    FILE *archivo;
+    char buffer[256];
+    
+    // === LECTURA ===
+    archivo = fopen("archivo.txt", "r");
+    if (archivo == NULL) {
+        perror("Error al abrir archivo");
+        return 1;
+    }
+    
+    while (fgets(buffer, sizeof(buffer), archivo) != NULL) {
+        printf("%s", buffer);
+    }
+    fclose(archivo);
+    
+    // === ESCRITURA ===
+    archivo = fopen("salida.txt", "w");
+    if (archivo == NULL) {
+        perror("Error");
+        return 1;
+    }
+    fprintf(archivo, "Hola mundo\\n");
+    fprintf(archivo, "Línea 2\\n");
+    fclose(archivo);
+    
+    // === APPEND ===
+    archivo = fopen("log.txt", "a");
+    fprintf(archivo, "Nueva entrada de log\\n");
+    fclose(archivo);
+    
+    // === LECTURA BINARIA ===
+    archivo = fopen("datos.bin", "rb");
+    if (archivo) {
+        int datos[100];
+        size_t elementos = fread(datos, sizeof(int), 100, archivo);
+        fclose(archivo);
+    }
+    
+    // === ELIMINAR ===
+    remove("archivo.txt");
+    
+    return 0;
+}`,
+            ejercicio: "Escribe un programa que copie un archivo byte por byte (similar al comando `cp`)."
+        },
+        bash: {
+            titulo: "🐧 Bash - Manejo de Archivos",
+            descripcion: "En Bash (shell de Linux/Unix), los archivos se manejan con comandos estándar: `cat`, `echo`, `read`, redirecciones `>`, `>>`, `<`. También se puede programar con bucles y condicionales.",
+            codigo: `#!/bin/bash
+
+# === LECTURA DE ARCHIVO ===
+cat archivo.txt
+# o línea por línea
+while IFS= read -r linea; do
+    echo "Línea: $linea"
+done < archivo.txt
+
+# === ESCRITURA (sobrescribe) ===
+echo "Hola mundo" > salida.txt
+echo "Línea 2" >> salida.txt
+
+# === APPEND ===
+echo "Nueva línea" >> log.txt
+
+# === VERIFICAR EXISTENCIA ===
+if [ -f "archivo.txt" ]; then
+    echo "El archivo existe"
+fi
+
+# === LEER VARIABLES DESDE ARCHIVO ===
+source config.txt  # lee variables
+
+# === ELIMINAR ===
+rm archivo.txt
+
+# === COPIAR ===
+cp origen.txt destino.txt
+
+# === MOVER/RENOMBRAR ===
+mv viejo.txt nuevo.txt
+
+# === CONTAR LÍNEAS ===
+wc -l archivo.txt
+
+# === BUSCAR TEXTO ===
+grep "palabra" archivo.txt
+
+# === RECORRER ARCHIVOS DE UN DIRECTORIO ===
+for archivo in *.txt; do
+    echo "Procesando: $archivo"
+done`,
+            ejercicio: "Crea un script que busque todos los archivos `.log` en un directorio y los comprima en un `.tar.gz`."
+        }
+    };
+    
+    // ============================================================
+    // EJERCICIOS INTERACTIVOS (simulador de código)
+    // ============================================================
+    
+    const ejerciciosContent = `
+        <h3>🎯 Ejercicios Interactivos</h3>
+        
+        <div class="ejercicio">
+            <h4>Ejercicio 1: Leer y mostrar archivo</h4>
+            <p>Escribe un programa que lea el archivo <strong>datos.txt</strong> y muestre su contenido en consola.</p>
+            <div class="input-group">
+                <label>Lenguaje:</label>
+                <select id="langEj1">
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="java">Java</option>
+                    <option value="c">C</option>
+                    <option value="bash">Bash</option>
+                </select>
+            </div>
+            <button onclick="mostrarSolucion(1)">📋 Mostrar solución</button>
+            <div id="solucionEj1" class="resultado" style="display:none;"></div>
+        </div>
+        
+        <div class="ejercicio">
+            <h4>Ejercicio 2: Escribir en archivo</h4>
+            <p>Escribe un programa que cree un archivo llamado <strong>salida.txt</strong> con el texto "Hola, mundo!"</p>
+            <div class="input-group">
+                <label>Lenguaje:</label>
+                <select id="langEj2">
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="java">Java</option>
+                    <option value="c">C</option>
+                    <option value="bash">Bash</option>
+                </select>
+            </div>
+            <button onclick="mostrarSolucion(2)">📋 Mostrar solución</button>
+            <div id="solucionEj2" class="resultado" style="display:none;"></div>
+        </div>
+        
+        <div class="ejercicio">
+            <h4>Ejercicio 3: Copiar archivo</h4>
+            <p>Implementa una función que copie el contenido de <strong>origen.txt</strong> a <strong>destino.txt</strong>.</p>
+            <div class="input-group">
+                <label>Lenguaje:</label>
+                <select id="langEj3">
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="java">Java</option>
+                    <option value="c">C</option>
+                    <option value="bash">Bash</option>
+                </select>
+            </div>
+            <button onclick="mostrarSolucion(3)">📋 Mostrar solución</button>
+            <div id="solucionEj3" class="resultado" style="display:none;"></div>
+        </div>
+        
+        <div class="ejercicio">
+            <h4>💡 Simulador de código (ejecuta en tu máquina)</h4>
+            <p>Los ejemplos y soluciones son para que copies, pegues y ejecutes en tu entorno local. No hay un intérprete en el navegador por razones de seguridad, pero puedes usar <strong>Replit</strong>, <strong>JSFiddle</strong> o tu terminal local.</p>
+        </div>
+    `;
+    
+    // Soluciones por lenguaje para cada ejercicio
+    const soluciones = {
+        ej1: {
+            python: `with open("datos.txt", "r") as f:\n    print(f.read())`,
+            javascript: `const fs = require('fs');\nfs.readFile('datos.txt', 'utf8', (err, data) => {\n    if (err) throw err;\n    console.log(data);\n});`,
+            java: `import java.nio.file.*;\nimport java.io.*;\n\npublic class Leer {\n    public static void main(String[] args) throws IOException {\n        String contenido = Files.readString(Path.of("datos.txt"));\n        System.out.println(contenido);\n    }\n}`,
+            c: `#include <stdio.h>\nint main() {\n    FILE *f = fopen("datos.txt", "r");\n    char c;\n    while ((c = fgetc(f)) != EOF) putchar(c);\n    fclose(f);\n    return 0;\n}`,
+            bash: `#!/bin/bash\ncat datos.txt`
+        },
+        ej2: {
+            python: `with open("salida.txt", "w") as f:\n    f.write("Hola, mundo!")`,
+            javascript: `const fs = require('fs');\nfs.writeFileSync('salida.txt', 'Hola, mundo!');`,
+            java: `import java.nio.file.*;\nimport java.io.*;\n\nFiles.writeString(Path.of("salida.txt"), "Hola, mundo!");`,
+            c: `#include <stdio.h>\nint main() {\n    FILE *f = fopen("salida.txt", "w");\n    fprintf(f, "Hola, mundo!");\n    fclose(f);\n    return 0;\n}`,
+            bash: `#!/bin/bash\necho "Hola, mundo!" > salida.txt`
+        },
+        ej3: {
+            python: `def copiar(origen, destino):\n    with open(origen, "rb") as f_origen:\n        with open(destino, "wb") as f_destino:\n            f_destino.write(f_origen.read())`,
+            javascript: `const fs = require('fs');\nfs.copyFileSync('origen.txt', 'destino.txt');`,
+            java: `import java.nio.file.*;\nFiles.copy(Path.of("origen.txt"), Path.of("destino.txt"), StandardCopyOption.REPLACE_EXISTING);`,
+            c: `#include <stdio.h>\nint main() {\n    FILE *origen = fopen("origen.txt", "rb");\n    FILE *destino = fopen("destino.txt", "wb");\n    char buffer[1024];\n    size_t n;\n    while ((n = fread(buffer, 1, 1024, origen)) > 0)\n        fwrite(buffer, 1, n, destino);\n    fclose(origen);\n    fclose(destino);\n    return 0;\n}`,
+            bash: `#!/bin/bash\ncp origen.txt destino.txt`
+        }
+    };
+    
+    function mostrarSolucion(ejNum) {
+        const lang = document.getElementById(`langEj${ejNum}`).value;
+        const solucionDiv = document.getElementById(`solucionEj${ejNum}`);
+        const solKey = `ej${ejNum}`;
+        
+        let solucion = soluciones[solKey]?.[lang] || "Solución no disponible para este lenguaje";
+        
+        solucionDiv.innerHTML = `<strong>Solución en ${lang.toUpperCase()}:</strong><br><div class="codigo" style="margin-top:10px;">${solucion.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
+        solucionDiv.style.display = "block";
+    }
+    
+    // ============================================================
+    // RENDERIZADO DINÁMICO
+    // ============================================================
+    
+    let temaActual = 0;
+    
+    function renderizarTeoria() {
+        const panel = document.getElementById('panelTeoria');
+        if (temaActual === 0) {
+            panel.innerHTML = teoriaContent;
+        } else if (temaActual >= 1 && temaActual <= 5) {
+            const lenguajes = ['python', 'javascript', 'java', 'c', 'bash'];
+            const langKey = lenguajes[temaActual - 1];
+            const ej = ejemplos[langKey];
+            panel.innerHTML = `
+                <h2>${ej.titulo}</h2>
+                <div class="concepto">
+                    <strong>📌 Características:</strong><br>
+                    ${ej.descripcion}
+                </div>
+                <div class="codigo">
+                    <strong>💻 Código de ejemplo:</strong><br><br>
+                    ${ej.codigo.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+                </div>
+                <div class="concepto">
+                    <strong>🎯 Ejercicio propuesto:</strong><br>
+                    ${ej.ejercicio}
+                </div>
+            `;
+        } else {
+            panel.innerHTML = `
+                <h2>🎯 Ejercicios prácticos</h2>
+                <div class="concepto">
+                    <strong>📌 Sobre esta sección:</strong><br>
+                    En el panel derecho encontrarás ejercicios interactivos con soluciones en múltiples lenguajes.
+                    Practica cada operación básica con archivos.
+                </div>
+                <div class="concepto">
+                    <strong>💡 Recomendación:</strong><br>
+                    Copia los ejemplos y soluciones a tu entorno local. Modifícalos y experimenta.
+                </div>
+                <div class="codigo">
+                    <strong>📁 Estructura recomendada para practicar:</strong><br><br>
+                    proyecto/<br>
+                    ├── ejercicios/<br>
+                    │   ├── leer.py<br>
+                    │   ├── escribir.js<br>
+                    │   ├── CopiarArchivo.java<br>
+                    │   └── copiar.c<br>
+                    ├── datos.txt<br>
+                    └── salida.txt
+                </div>
+            `;
+        }
+    }
+    
+    function renderizarInteractivo() {
+        const panel = document.getElementById('panelInteractivo');
+        if (temaActual === 6) {
+            panel.innerHTML = ejerciciosContent;
+        } else if (temaActual >= 1 && temaActual <= 5) {
+            const lenguajes = ['python', 'javascript', 'java', 'c', 'bash'];
+            const langKey = lenguajes[temaActual - 1];
+            const ej = ejemplos[langKey];
+            panel.innerHTML = `
+                <h3>🔧 Practica con ${ej.titulo}</h3>
+                <div class="ejercicio">
+                    <h4>📝 Ejercicio: ${ej.ejercicio}</h4>
+                    <p>Copia el código base y complétalo. Puedes ejecutarlo en tu entorno local.</p>
+                    <div class="codigo">
+                        <strong>🎯 Tu tarea:</strong><br><br>
+                        ${ej.ejercicio}
+                    </div>
+                    <button onclick="alert('Copia el código en tu editor favorito y practica. Revisa el panel izquierdo para ver ejemplos completos.')">💡 Pista</button>
+                </div>
+                <div class="ejercicio">
+                    <h4>⚡ Prueba rápida</h4>
+                    <p>¿Qué salida produce el siguiente código?</p>
+                    <div class="codigo">
+                        ${ej.codigo.split('\\n').slice(0, 5).join('\\n')}...
+                    </div>
+                    <button onclick="alert('Revisa la documentación del lenguaje o ejecuta el código para comprobarlo.')">🔍 Ver explicación</button>
+                </div>
+            `;
+        } else {
+            panel.innerHTML = `
+                <h3>📖 Contenido teórico</h3>
+                <div class="concepto">
+                    <strong>🎯 Objetivo de aprendizaje:</strong><br>
+                    Comprender los conceptos fundamentales del manejo de archivos: apertura, lectura, escritura, cierre, y manejo de errores.
+                </div>
+                <div class="concepto">
+                    <strong>📚 Temas cubiertos:</strong><br>
+                    • Modos de apertura (r, w, a, r+, w+, a+)<br>
+                    • Buffers y flushing<br>
+                    • Manejo de errores (excepciones, códigos de retorno)<br>
+                    • Operaciones: leer, escribir, append, copiar, eliminar, renombrar<br>
+                    • Ejemplos en 5 lenguajes de programación
+                </div>
+                <div class="ejercicio">
+                    <h4>🎯 Para practicar:</h4>
+                    <p>Ve a la sección de ejercicios (tema 7) para resolver problemas interactivos.</p>
+                </div>
+            `;
+        }
+    }
+    
+    function cambiarTema(indice) {
+        temaActual = indice;
+        
+        document.querySelectorAll('.btn-tema').forEach((btn, i) => {
+            if (i == indice) btn.classList.add('activo');
+            else btn.classList.remove('activo');
+        });
+        
+        renderizarTeoria();
+        renderizarInteractivo();
+    }
+    
+    // Inicializar
+    renderizarTeoria();
+    renderizarInteractivo();
+    
+    document.querySelectorAll('.btn-tema').forEach((btn, idx) => {
+        btn.addEventListener('click', () => cambiarTema(idx));
+    });
+    
+    // Exponer función globalmente
+    window.mostrarSolucion = mostrarSolucion;
+</script>
+</body>
+</html>
